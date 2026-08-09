@@ -1,0 +1,5 @@
+{
+  "_comment": "Companies to check for MuleSoft job postings via their public ATS API. This starts EMPTY on purpose — I tried guessing slugs for big Indian IT-services firms (TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini) and none of them run Greenhouse or Lever; most use Workday (per-tenant, needs the exact subdomain) or a custom portal. Add companies here as you find their real board: open their careers page, if the URL contains 'greenhouse.io' or 'jobs.lever.co', copy the slug from the URL into the matching list below.",
+  "greenhouse": [],
+  "lever": []
+}
