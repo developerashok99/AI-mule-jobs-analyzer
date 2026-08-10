@@ -3,3 +3,4 @@ __pycache__/
 .env
 data/browser_sessions/
 .DS_Store
+venv/

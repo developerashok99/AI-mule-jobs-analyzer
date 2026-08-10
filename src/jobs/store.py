@@ -8,7 +8,7 @@ from src.config import MONGODB_URI, MONGODB_DB_NAME
 _client = None
 
 
-def getget_db():
+def get_db():
     global _client
     if not MONGODB_URI:
         raise RuntimeError("MONGODB_URI is not set (see .env.example)")
