@@ -1,5 +1,16 @@
 {
-  "_comment": "Companies to check for MuleSoft job postings via their public ATS API. This starts EMPTY on purpose — I tried guessing slugs for big Indian IT-services firms (TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini) and none of them run Greenhouse or Lever; most use Workday (per-tenant, needs the exact subdomain) or a custom portal. Add companies here as you find their real board: open their careers page, if the URL contains 'greenhouse.io' or 'jobs.lever.co', copy the slug from the URL into the matching list below.",
-  "greenhouse": [],
-  "lever": []
+  "_comment": "Each slug below was verified live (curl'd the actual Greenhouse/Lever API) before being added, and had at least one real MuleSoft-related posting at verification time - unlike the big Indian IT-services firms (TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini), which don't run Greenhouse or Lever at all (guessed slugs 404'd or hit unrelated companies with the same slug). Range: innovationsolved/greenirony are small MuleSoft-focused boutique consultancies (startup-scale); ioconnectservices.com/ubiminds are small-to-mid integration/staffing shops; ciandt is a global IT consultancy (MNC-scale); twilio/yext/monsterenergy/gurobioptimization are recognizable product companies that occasionally post MuleSoft-adjacent integration roles. Add more the same way: open a company's real careers page, confirm the URL contains 'greenhouse.io' or 'jobs.lever.co', copy the slug in.",
+  "greenhouse": [
+    "innovationsolved",
+    "greenirony",
+    "twilio",
+    "yext",
+    "monsterenergy"
+  ],
+  "lever": [
+    "ciandt",
+    "ioconnectservices.com",
+    "Ubiminds",
+    "GurobiOptimization"
+  ]
 }
