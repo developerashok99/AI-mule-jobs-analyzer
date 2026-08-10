@@ -1,11 +1,14 @@
 {
-  "_comment": "Each slug below was verified live (curl'd the actual Greenhouse/Lever API) before being added, and had at least one real MuleSoft-related posting at verification time - unlike the big Indian IT-services firms (TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini), which don't run Greenhouse or Lever at all (guessed slugs 404'd or hit unrelated companies with the same slug). Range: innovationsolved/greenirony are small MuleSoft-focused boutique consultancies (startup-scale); ioconnectservices.com/ubiminds are small-to-mid integration/staffing shops; ciandt is a global IT consultancy (MNC-scale); twilio/yext/monsterenergy/gurobioptimization are recognizable product companies that occasionally post MuleSoft-adjacent integration roles. Add more the same way: open a company's real careers page, confirm the URL contains 'greenhouse.io' or 'jobs.lever.co', copy the slug in.",
+  "_comment": "Each slug below was verified live (curl'd the actual Greenhouse/Lever API) before being added, and had at least one real MuleSoft-related posting at verification time - unlike the big Indian IT-services firms (TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini) and boutique MuleSoft partners (Apisero, Closeloop, Twistellar, Prowess Software), which don't run Greenhouse or Lever at all (guessed/searched slugs all 404'd - they use Workday or a custom portal instead). Range: innovationsolved/greenirony are small MuleSoft-focused boutique consultancies (startup-scale); ioconnectservices.com/ubiminds/gurobioptimization are small-to-mid integration/product shops; ciandt is a global IT consultancy (MNC-scale); axs/aegworldwide/monsterenergy are large recognizable consumer brands; twilio/yext/horizonindustrieslimited are mid-to-large product companies. This is NOT exhaustive - it's what surfaced across several search passes (mulesoft/dataweave/anypoint/mule-esb keyword searches, MuleSoft's own partner directory) each individually curl-verified. Add more the same way: open a company's real careers page, confirm the URL contains 'greenhouse.io' or 'jobs.lever.co', copy the slug in, then verify it resolves before trusting it.",
   "greenhouse": [
     "innovationsolved",
     "greenirony",
     "twilio",
     "yext",
-    "monsterenergy"
+    "monsterenergy",
+    "aegworldwide",
+    "horizonindustrieslimited",
+    "axs"
   ],
   "lever": [
     "ciandt",
