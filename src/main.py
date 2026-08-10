@@ -14,7 +14,7 @@ from datetime import date
 from src.delivery import telegram_bot
 from src.jobs import jd_analysis, store
 from src.jobs.company_score import score_company
-from src.jobs.sources import ats_boards
+from src.jobs.sources import aggregators, ats_boards
 from src.lecture_qna import runner as lecture_runner
 
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +29,7 @@ def run():
     if updated_chapters:
         sections.append(f"\nNew interview Q&A generated for: {', '.join(updated_chapters)}")
 
-    postings = ats_boards.fetch_all()
+    postings = ats_boards.fetch_all() + aggregators.fetch_all()
     new_count = store.save_postings(postings)
     sections.append(f"\nJobs: {len(postings)} MuleSoft postings found today, {new_count} new.")
 

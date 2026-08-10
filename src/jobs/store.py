@@ -50,6 +50,20 @@ def save_postings(postings) -> int:
         )
         if result.upserted_id is not None:
             new_count += 1
+
+        if job.salary_min:
+            # backfills salary onto jobs seen before salary extraction existed, and
+            # refreshes it if a re-fetch finds a better match - doesn't touch the
+            # $setOnInsert fields above, which stay fixed at first-seen values
+            jobs.update_one(
+                {"_id": job.dedupe_key()},
+                {"$set": {
+                    "salary_min": job.salary_min,
+                    "salary_max": job.salary_max,
+                    "salary_currency": job.salary_currency,
+                    "salary_text": job.salary_text,
+                }},
+            )
     return new_count
 
 

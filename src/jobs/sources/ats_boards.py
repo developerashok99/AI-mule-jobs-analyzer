@@ -15,6 +15,7 @@ import requests
 
 from .base import JobPosting
 from .workday import fetch_workday
+from ..salary_extraction import apply_salary
 
 logger = logging.getLogger(__name__)
 
@@ -95,4 +96,4 @@ def fetch_all():
         postings.extend(fetch_lever(slug))
     for entry in companies.get("workday", []):
         postings.extend(fetch_workday(entry["company"], entry["tenant"], entry["wd"], entry["site"]))
-    return postings
+    return [apply_salary(p) for p in postings]
