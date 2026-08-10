@@ -19,4 +19,9 @@ TARGET_EXPERIENCE_MAX = int(os.environ.get("TARGET_EXPERIENCE_MAX", 5))
 MONGODB_URI = os.environ.get("MONGODB_URI", "")
 MONGODB_DB_NAME = os.environ.get("MONGODB_DB_NAME", "mulesoft_job_agent")
 
+# Optional - free tier at developer.adzuna.com. Leave blank to skip this source entirely.
+ADZUNA_APP_ID = os.environ.get("ADZUNA_APP_ID", "")
+ADZUNA_APP_KEY = os.environ.get("ADZUNA_APP_KEY", "")
+ADZUNA_COUNTRY = os.environ.get("ADZUNA_COUNTRY", "in")  # in, us, gb, ...
+
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")

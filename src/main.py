@@ -1,9 +1,10 @@
 """Daily pipeline entry point, meant to run in GitHub Actions:
 1. Generate interview Q&A for any new/changed lecture chapters
-2. Pull MuleSoft postings from configured ATS company boards
-3. Score any newly-seen companies
-4. Update the JD skill-frequency report
-5. Send a Telegram digest
+2. Pull MuleSoft postings from configured ATS company boards + free aggregators
+3. Score any newly-seen companies (skips ones already scored recently)
+4. Recheck a rotating batch of older postings for dead links
+5. Update the JD skill-frequency report
+6. Send a Telegram digest
 
 Does NOT run the LinkedIn/Naukri/Indeed scrapers - those need a real browser session and
 should run locally (see src/local_scrape.py and src/jobs/sources/browser_boards.py).
@@ -12,9 +13,9 @@ import logging
 from datetime import date
 
 from src.delivery import telegram_bot
-from src.jobs import jd_analysis, store
+from src.jobs import jd_analysis, stale_pruning, store
 from src.jobs.company_score import score_company
-from src.jobs.sources import aggregators, ats_boards
+from src.jobs.sources import adzuna, aggregators, ats_boards
 from src.lecture_qna import runner as lecture_runner
 
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +30,7 @@ def run():
     if updated_chapters:
         sections.append(f"\nNew interview Q&A generated for: {', '.join(updated_chapters)}")
 
-    postings = ats_boards.fetch_all() + aggregators.fetch_all()
+    postings = ats_boards.fetch_all() + aggregators.fetch_all() + adzuna.fetch_all()
     new_count = store.save_postings(postings)
     sections.append(f"\nJobs: {len(postings)} MuleSoft postings found today, {new_count} new.")
 
@@ -37,13 +38,17 @@ def run():
     companies_scored = set()
     for job in new_jobs_today:
         company = job["company"]
-        if company in companies_scored:
+        if company in companies_scored or store.is_company_recently_scored(company):
             continue
         companies_scored.add(company)
         score, verdict = score_company(company)
         if score is not None:
             store.save_company_verdict(company, score, verdict)
             sections.append(f"\n{company}: {score}/10 - {verdict}")
+
+    closed_count = stale_pruning.prune_stale_jobs()
+    if closed_count:
+        sections.append(f"\nMarked {closed_count} job(s) as closed (dead link).")
 
     all_jobs = store.all_jobs()
     totals = jd_analysis.aggregate_skill_counts(all_jobs)
