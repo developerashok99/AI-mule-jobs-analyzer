@@ -6,6 +6,7 @@ import os
 from groq import Groq
 
 from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.groq_errors import raise_if_quota_exhausted
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,8 @@ def generate_questions_for_chapter(chapter_title: str, chapter_text: str) -> str
             ],
             temperature=0.4,
         )
-    except Exception:
+    except Exception as exc:
+        raise_if_quota_exhausted(exc)
         logger.exception("Groq question-generation call failed for chapter: %s", chapter_title)
         return ""
 

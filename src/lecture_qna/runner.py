@@ -1,8 +1,15 @@
 """Walks every lecture chapter and generates interview Q&A + a cheat sheet for
 new/changed chapters only. Results and the per-chapter cache (by GitHub blob sha) both
-live in MongoDB, so nothing needs to be committed back to the repo from CI."""
-import logging
+live in MongoDB, so nothing needs to be committed back to the repo from CI.
 
+Stops early (rather than burning through 20 more doomed calls) the moment Groq's daily
+token cap is hit - whatever's left over just rolls to the next scheduled run (3x/day),
+so a single run never needs to cover all 23 chapters' worth of generation by itself.
+"""
+import logging
+from datetime import date
+
+from src.groq_errors import GroqQuotaExhausted
 from src.jobs.store import get_db
 from src.lecture_qna.cheat_sheet import generate_cheat_sheet
 from src.lecture_qna.dataweave_practice import generate_practice_problems
@@ -29,7 +36,11 @@ def run():
     chapters = list_chapters()
 
     new_or_changed = []
+    quota_exhausted = False
     for chapter in chapters:
+        if quota_exhausted:
+            break
+
         name, sha = chapter["name"], chapter["sha"]
         cached = collection.find_one({"_id": name})
 
@@ -37,18 +48,34 @@ def run():
             _backfill_missing_fields(collection, name, cached)
             if "cheat_sheet_markdown" not in cached:
                 text = fetch_chapter_text(chapter["download_url"])
-                sheet = generate_cheat_sheet(name, text)
+                try:
+                    sheet = generate_cheat_sheet(name, text)
+                except GroqQuotaExhausted:
+                    logger.info("Groq daily quota reached - stopping here, rest picks up next run")
+                    quota_exhausted = True
+                    continue
                 if sheet:
-                    collection.update_one({"_id": name}, {"$set": {"cheat_sheet_markdown": sheet}})
+                    collection.update_one(
+                        {"_id": name},
+                        {"$set": {"cheat_sheet_markdown": sheet, "generated_date": date.today().isoformat()}},
+                    )
             continue  # already generated for this exact version of the chapter
 
         logger.info("Generating interview questions for: %s", name)
         text = fetch_chapter_text(chapter["download_url"])
-        qa_markdown = generate_questions_for_chapter(name, text)
+        try:
+            qa_markdown = generate_questions_for_chapter(name, text)
+        except GroqQuotaExhausted:
+            logger.info("Groq daily quota reached - stopping here, rest picks up next run")
+            quota_exhausted = True
+            continue
         if not qa_markdown:
-            continue  # LLM call failed, leave cache untouched so it's retried next run
+            continue  # LLM call failed for a non-quota reason, leave cache untouched to retry next run
 
-        cheat_sheet = generate_cheat_sheet(name, text)
+        try:
+            cheat_sheet = generate_cheat_sheet(name, text)
+        except GroqQuotaExhausted:
+            cheat_sheet = ""  # got the Q&A at least - cheat sheet backfills next run
 
         collection.update_one(
             {"_id": name},
@@ -56,13 +83,15 @@ def run():
                 "sha": sha,
                 "questions_markdown": qa_markdown,
                 "questions": parse_questions(name, qa_markdown),
-                "cheat_sheet_markdown": cheat_sheet,
+                "generated_date": date.today().isoformat(),
+                **({"cheat_sheet_markdown": cheat_sheet} if cheat_sheet else {}),
             }},
             upsert=True,
         )
         new_or_changed.append(name)
 
-    _ensure_dataweave_practice(chapters)
+    if not quota_exhausted:
+        _ensure_dataweave_practice(chapters)
 
     return new_or_changed
 
@@ -79,7 +108,11 @@ def _ensure_dataweave_practice(chapters):
 
     logger.info("Generating DataWeave practice problems")
     text = fetch_chapter_text(match["download_url"])
-    problems = generate_practice_problems(text)
+    try:
+        problems = generate_practice_problems(text)
+    except GroqQuotaExhausted:
+        logger.info("Groq daily quota reached - DataWeave practice problems will generate next run")
+        return
     if not problems:
         return
 

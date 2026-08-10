@@ -33,9 +33,10 @@ cp .env.example .env   # fill in the keys below
 ```
 
 - **Groq API key**: free at https://console.groq.com/keys. Note: the free tier has a **daily token cap**
-  (100k tokens/day at time of writing) - generating cheat sheets/questions/practice problems for all 23 chapters
-  in one run can hit it. This is expected and self-healing: a failed generation just gets retried on the next run
-  (cache is keyed on chapter sha, so nothing is lost, it just doesn't overwrite until it succeeds).
+  (100k tokens/day at time of writing). `src/groq_errors.py` detects this specific error (as opposed to a
+  transient per-minute rate limit) and every generation loop stops cleanly the moment it's hit, rather than
+  burning through the rest of a chapter list on doomed calls - whatever's left rolls to the next scheduled run
+  (3x/day) automatically. Nothing is lost either way; the cache is keyed on chapter sha.
 - **Telegram bot**: message @BotFather, `/newbot`, use a NEW bot (not one you use elsewhere) so this project's
   messages don't mix with anything else. Get your chat id by messaging the bot once, then hitting
   `https://api.telegram.org/bot<token>/getUpdates`.

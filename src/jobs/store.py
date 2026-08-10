@@ -116,7 +116,10 @@ def jobs_to_recheck(limit: int = 25):
 
 
 def mark_job_closed(dedupe_key: str):
-    get_db().jobs.update_one({"_id": dedupe_key}, {"$set": {"closed": True}})
+    get_db().jobs.update_one(
+        {"_id": dedupe_key},
+        {"$set": {"closed": True, "closed_date": date.today().isoformat()}},
+    )
 
 
 def is_company_recently_scored(company: str, max_age_days: int = 14) -> bool:

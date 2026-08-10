@@ -13,6 +13,7 @@ import logging
 from datetime import date
 
 from src.delivery import telegram_bot
+from src.groq_errors import GroqQuotaExhausted
 from src.jobs import jd_analysis, stale_pruning, store
 from src.jobs.company_score import score_company
 from src.jobs.sources import adzuna, aggregators, ats_boards
@@ -41,7 +42,11 @@ def run():
         if company in companies_scored or store.is_company_recently_scored(company):
             continue
         companies_scored.add(company)
-        score, verdict = score_company(company)
+        try:
+            score, verdict = score_company(company)
+        except GroqQuotaExhausted:
+            sections.append("\nGroq daily quota reached - remaining companies score next run.")
+            break
         if score is not None:
             store.save_company_verdict(company, score, verdict)
             sections.append(f"\n{company}: {score}/10 - {verdict}")

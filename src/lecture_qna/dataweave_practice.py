@@ -8,6 +8,7 @@ import logging
 from groq import Groq
 
 from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.groq_errors import raise_if_quota_exhausted
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,8 @@ def generate_practice_problems(chapter_text: str):
         text = response.choices[0].message.content.strip()
         text = text.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
         problems = json.loads(text)
-    except Exception:
+    except Exception as exc:
+        raise_if_quota_exhausted(exc)
         logger.exception("DataWeave practice problem generation failed")
         return []
 

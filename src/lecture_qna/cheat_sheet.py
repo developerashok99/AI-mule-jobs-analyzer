@@ -5,6 +5,7 @@ import logging
 from groq import Groq
 
 from src.config import GROQ_API_KEY, GROQ_MODEL
+from src.groq_errors import raise_if_quota_exhausted
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,8 @@ def generate_cheat_sheet(chapter_title: str, chapter_text: str) -> str:
             messages=[{"role": "user", "content": PROMPT_TEMPLATE.format(chapter_text=chapter_text[:12000])}],
             temperature=0.3,
         )
-    except Exception:
+    except Exception as exc:
+        raise_if_quota_exhausted(exc)
         logger.exception("Cheat sheet generation failed for chapter: %s", chapter_title)
         return ""
 
