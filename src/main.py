@@ -49,6 +49,7 @@ def run():
     totals = jd_analysis.aggregate_skill_counts(all_jobs)
     if totals:
         sections.append("\n" + jd_analysis.format_report(totals, len(all_jobs), top_n=10))
+        store.save_keyword_counts(today, dict(totals))
 
     digest = "\n".join(sections)
     logger.info(digest)

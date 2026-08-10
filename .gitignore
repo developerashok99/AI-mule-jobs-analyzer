@@ -1,8 +1,5 @@
 __pycache__/
 *.pyc
 .env
-data/*.db
-data/*.sqlite3
-data/cache/
 data/browser_sessions/
 .DS_Store

@@ -28,13 +28,19 @@ captcha-solving or IP/fingerprint spoofing to defeat that - that's evading a sec
 ```bash
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # fill in GROQ_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+cp .env.example .env   # fill in GROQ_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, MONGODB_URI
 ```
 
 - **Groq API key**: free at https://console.groq.com/keys
 - **Telegram bot**: message @BotFather, `/newbot`, use a NEW bot (not one you use elsewhere) so this project's
   messages don't mix with anything else. Get your chat id by messaging the bot once, then hitting
   `https://api.telegram.org/bot<token>/getUpdates`.
+- **MongoDB**: free M0 cluster at https://cloud.mongodb.com. Database Access → add a user (this gives you the
+  username/password for the connection string, separate from your Atlas login). Network Access → allow
+  `0.0.0.0/0`, since GitHub Actions runners don't have a fixed IP. Copy the `mongodb+srv://...` connection string
+  into `MONGODB_URI`, with the real username/password substituted in (not the `<db_username>` placeholder Atlas
+  shows by default). All data lives here — jobs, company verdicts, JD skill-frequency history, and the generated
+  lecture Q&A — so nothing needs to be committed back to the repo from CI.
 
 ### Run the daily pipeline manually
 
@@ -62,7 +68,7 @@ python -m src.local_scrape run
 ## GitHub Actions
 
 `.github/workflows/daily.yml` runs `src/main.py` daily. Add these as repo secrets (Settings → Secrets → Actions):
-`GROQ_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+`GROQ_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `MONGODB_URI`.
 
 ## What's not built yet
 

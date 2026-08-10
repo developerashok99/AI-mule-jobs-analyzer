@@ -1,41 +1,24 @@
-"""Walks every lecture chapter, generates interview Q&A for new/changed chapters only,
-and writes results to data/lecture_qna/<chapter>.md."""
-import json
+"""Walks every lecture chapter and generates interview Q&A for new/changed chapters only.
+Results and the per-chapter cache (by GitHub blob sha) both live in MongoDB, so nothing
+needs to be committed back to the repo from CI."""
 import logging
-import os
 
-from src.config import DATA_DIR
+from src.jobs.store import get_db
 from src.lecture_qna.fetch_notes import list_chapters, fetch_chapter_text
 from src.lecture_qna.generate_questions import generate_questions_for_chapter
 
 logger = logging.getLogger(__name__)
 
-OUTPUT_DIR = os.path.join(DATA_DIR, "lecture_qna")
-CACHE_PATH = os.path.join(DATA_DIR, "lecture_qna_cache.json")
-
-
-def _load_cache():
-    if os.path.exists(CACHE_PATH):
-        with open(CACHE_PATH) as f:
-            return json.load(f)
-    return {}
-
-
-def _save_cache(cache):
-    os.makedirs(DATA_DIR, exist_ok=True)
-    with open(CACHE_PATH, "w") as f:
-        json.dump(cache, f, indent=2)
-
 
 def run():
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    cache = _load_cache()
+    collection = get_db().lecture_qna
     chapters = list_chapters()
 
     new_or_changed = []
     for chapter in chapters:
         name, sha = chapter["name"], chapter["sha"]
-        if cache.get(name) == sha:
+        cached = collection.find_one({"_id": name})
+        if cached and cached.get("sha") == sha:
             continue  # already generated for this exact version of the chapter
 
         logger.info("Generating interview questions for: %s", name)
@@ -44,15 +27,19 @@ def run():
         if not qa_markdown:
             continue  # LLM call failed, leave cache untouched so it's retried next run
 
-        out_path = os.path.join(OUTPUT_DIR, name.replace(" ", "_"))
-        with open(out_path, "w") as f:
-            f.write(f"# Interview Questions: {name}\n\n{qa_markdown}\n")
-
-        cache[name] = sha
+        collection.update_one(
+            {"_id": name},
+            {"$set": {"sha": sha, "questions_markdown": qa_markdown}},
+            upsert=True,
+        )
         new_or_changed.append(name)
 
-    _save_cache(cache)
     return new_or_changed
+
+
+def get_questions(chapter_name: str):
+    doc = get_db().lecture_qna.find_one({"_id": chapter_name})
+    return doc["questions_markdown"] if doc else None
 
 
 if __name__ == "__main__":

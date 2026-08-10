@@ -16,5 +16,7 @@ NOTES_PATH = os.environ.get("NOTES_PATH", "Mulesoft/Study Notes")
 TARGET_EXPERIENCE_MIN = int(os.environ.get("TARGET_EXPERIENCE_MIN", 3))
 TARGET_EXPERIENCE_MAX = int(os.environ.get("TARGET_EXPERIENCE_MAX", 5))
 
+MONGODB_URI = os.environ.get("MONGODB_URI", "")
+MONGODB_DB_NAME = os.environ.get("MONGODB_DB_NAME", "mulesoft_job_agent")
+
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-DB_PATH = os.path.join(DATA_DIR, "jobs.db")
