@@ -3,7 +3,9 @@
 These are meant to be read by external sites (they back the "jobs" widget companies
 embed on their own careers pages), so unlike Naukri/Indeed/LinkedIn they have no
 captcha/bot-wall and are safe to call on a schedule from CI. Coverage is limited to
-whichever companies you add to companies.json under their real board slug.
+whichever companies you add to companies.json under their real board slug. See
+workday.py for the third source - most large enterprises use Workday rather than
+Greenhouse/Lever, so that's where most of the MNC-scale coverage comes from.
 """
 import json
 import logging
@@ -12,6 +14,7 @@ import os
 import requests
 
 from .base import JobPosting
+from .workday import fetch_workday
 
 logger = logging.getLogger(__name__)
 
@@ -90,4 +93,6 @@ def fetch_all():
         postings.extend(fetch_greenhouse(slug))
     for slug in companies.get("lever", []):
         postings.extend(fetch_lever(slug))
+    for entry in companies.get("workday", []):
+        postings.extend(fetch_workday(entry["company"], entry["tenant"], entry["wd"], entry["site"]))
     return postings

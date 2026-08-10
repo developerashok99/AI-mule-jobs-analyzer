@@ -1,5 +1,5 @@
 {
-  "_comment": "Each slug below was verified live (curl'd the actual Greenhouse/Lever API) before being added, and had at least one real MuleSoft-related posting at verification time - unlike the big Indian IT-services firms (TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini) and boutique MuleSoft partners (Apisero, Closeloop, Twistellar, Prowess Software), which don't run Greenhouse or Lever at all (guessed/searched slugs all 404'd - they use Workday or a custom portal instead). Range: innovationsolved/greenirony are small MuleSoft-focused boutique consultancies (startup-scale); ioconnectservices.com/ubiminds/gurobioptimization are small-to-mid integration/product shops; ciandt is a global IT consultancy (MNC-scale); axs/aegworldwide/monsterenergy are large recognizable consumer brands; twilio/yext/horizonindustrieslimited are mid-to-large product companies. This is NOT exhaustive - it's what surfaced across several search passes (mulesoft/dataweave/anypoint/mule-esb keyword searches, MuleSoft's own partner directory) each individually curl-verified. Add more the same way: open a company's real careers page, confirm the URL contains 'greenhouse.io' or 'jobs.lever.co', copy the slug in, then verify it resolves before trusting it.",
+  "_comment": "Each entry below was verified live (hit the actual Greenhouse/Lever/Workday API) before being added, and had at least one real MuleSoft-related posting at verification time. Big Indian IT-services firms (TCS, Infosys, Wipro, Cognizant, Accenture, Capgemini) and boutique MuleSoft partners (Apisero, Closeloop, Twistellar, Prowess Software) don't run any of these three platforms - guessed/searched slugs all 404'd, they use a custom portal instead. This is NOT exhaustive - it's what surfaced across several search passes, each individually verified. Add more the same way: find a real job URL on the company's careers page, confirm the platform from the URL shape, verify it resolves before trusting it.",
   "greenhouse": [
     "innovationsolved",
     "greenirony",
@@ -15,5 +15,15 @@
     "ioconnectservices.com",
     "Ubiminds",
     "GurobiOptimization"
+  ],
+  "workday": [
+    { "company": "Amgen", "tenant": "amgen", "wd": "wd1", "site": "Careers" },
+    { "company": "Guidehouse", "tenant": "guidehouse", "wd": "wd1", "site": "external" },
+    { "company": "University of Chicago", "tenant": "uchicago", "wd": "wd5", "site": "External" },
+    { "company": "3M", "tenant": "3m", "wd": "wd1", "site": "Search" },
+    { "company": "Henry Schein", "tenant": "henryschein", "wd": "wd1", "site": "External_Careers" },
+    { "company": "Service Credit Union", "tenant": "servicecu", "wd": "wd5", "site": "SCU_External_Career_Site" },
+    { "company": "Allegro Microsystems", "tenant": "allegromicro", "wd": "wd5", "site": "AllegroCareers" },
+    { "company": "AmeriLife", "tenant": "amerilife", "wd": "wd5", "site": "External" }
   ]
 }
